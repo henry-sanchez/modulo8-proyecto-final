@@ -8,7 +8,7 @@ pipeline {
     }
     stage('build') {
       steps {
-        sh 'docker ps'
+        sh 'docker-compose ps'
       }
     }
   }
