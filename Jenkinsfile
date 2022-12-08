@@ -17,12 +17,25 @@ pipeline {
       steps {
         git branch: "${params.BRANCH}", url: 'https://github.com/janny35/Gestion_tareas_multiusuarios.git'
         sh 'echo "clonación finalizada"'
+        sh 'pwd'
       }
     }
-    stage('deploying in dev') {
+    stage('building in dev') {
       agent { label DEV_NODE }
       steps {
         sh 'docker build -t proyecto-final-front:1.0.0 .'
+        sh "docker save -o proyecto-final-front.tar proyecto-final-front:1.0.0"
+        stash name: "stash-artifact", includes: "proyecto-final-front.tar"
+        archiveArtifacts 'proyecto-final-front.tar'
+      }
+    }
+    stage("Deployment on PROd environment"){
+      agent { label PROD_NODE }
+      steps{
+          unstash "stash-artifact"
+          sh "docker load -i proyecto-final-front.tar"
+          sh "docker rm proyecto-final-front -f || true"
+          sh "docker run -idt -p 8888:80 --name proyecto-final-front proyecto-final-front:1.0.0"
       }
     }
   }
