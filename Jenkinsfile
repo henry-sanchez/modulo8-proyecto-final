@@ -3,12 +3,16 @@ pipeline {
   stages {
     stage('cloning') {
       steps {
-        git branch: 'frontend-docker', url: 'https://github.com/janny35/Gestion_tareas_multiusuarios.git'
+        git branch: ${params.BRANCH}, url: 'https://github.com/janny35/Gestion_tareas_multiusuarios.git'
       }
     }
     stage('build') {
       steps {
-        sh 'docker-compose ps'
+        sh '''
+          groups
+          pwd
+          ls -l
+        '''
       }
     }
   }
